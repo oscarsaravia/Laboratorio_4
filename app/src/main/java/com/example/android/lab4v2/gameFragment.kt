@@ -1,13 +1,13 @@
 package com.example.android.lab4v2
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI
 import com.example.android.lab4v2.databinding.FragmentGameBinding
 import kotlinx.android.synthetic.main.fragment_game.*
 
@@ -15,8 +15,6 @@ import kotlinx.android.synthetic.main.fragment_game.*
  * A simple [Fragment] subclass.
  */
 class gameFragment : Fragment() {
-
-
 
 
     private val personas: MutableList<Guest> = mutableListOf(
@@ -35,6 +33,9 @@ class gameFragment : Fragment() {
     lateinit var personaActual: Guest
     private var indexpersona = 0
     private var guest = Guest()
+    private var  asistentes = 0
+    private var invitados = 0
+    private var listado = ""
 
 
 
@@ -45,6 +46,7 @@ class gameFragment : Fragment() {
 
         val binding = DataBindingUtil.inflate<FragmentGameBinding>(inflater, R.layout.fragment_game, container, false)
         binding.guest = guest
+        (activity as AppCompatActivity).supportActionBar?.title = "Registrando (1/10)"
 
         binding.apply {
             binding.invalidateAll()
@@ -63,6 +65,7 @@ class gameFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.answer_menu, menu)
@@ -74,12 +77,33 @@ class gameFragment : Fragment() {
         when(item.itemId){
 
             R.id.check_button -> {
+
                 if(indexpersona < 10){
+                    asistentes += 1
                     textView3.text = personas[indexpersona].name
                     textView4.text = "Teléfono: " + personas[indexpersona].phone
                     textView5.text = "Email: " + personas[indexpersona].mail
+                    (activity as AppCompatActivity).supportActionBar?.title = "Registrando (" + (indexpersona+1) +"/10)"
+                    invitados +=1
+                    listado += personas[indexpersona].name +": si, "
+
                 }else{
-                    Toast.makeText(activity, "TOPE", Toast.LENGTH_SHORT).show()
+                    asistentes+=1
+                    invitados+=1
+                    //listado += personas[indexpersona].name +": si."
+                    indexpersona = 0
+                    val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)
+                    val editor = sharedPref?.edit()
+                    if (editor != null) {
+                        editor.putString("invitados", invitados.toString())
+                        editor.putString("asist", asistentes.toString())
+                        editor.putString("listado", listado)
+                        editor.apply()
+                    }
+                    view?.findNavController()?.navigate(R.id.action_gameFragment_to_resultsFragment)
+
+
+
                 }
             }
 
@@ -90,8 +114,24 @@ class gameFragment : Fragment() {
                     textView3.text = personas[indexpersona].name
                     textView4.text = "Teléfono: " + personas[indexpersona].phone
                     textView5.text = "Email: " + personas[indexpersona].mail
+                    (activity as AppCompatActivity).supportActionBar?.title = "Registrando (" + (indexpersona+1) +"/10)"
+                    invitados += 1
+                    listado += personas[indexpersona].name +": no, "
                 }else{
-                    Toast.makeText(activity, "TOPE", Toast.LENGTH_SHORT).show()
+                    //listado += personas[indexpersona].name +": no."
+                    indexpersona = 0
+                    invitados+=1
+
+                    val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)
+                    val editor = sharedPref?.edit()
+                    if (editor != null) {
+                        editor.putString("invitados", invitados.toString())
+                        editor.putString("asist", asistentes.toString())
+                        editor.putString("listado", listado)
+                        editor.apply()
+                    }
+                    view?.findNavController()?.navigate(R.id.action_gameFragment_to_resultsFragment)
+
                 }
             }
 
@@ -99,12 +139,9 @@ class gameFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun change_values(){
 
 
 
-
-    }
 
 
 

@@ -18,5 +18,32 @@
     <fragment
         android:id="@+id/gameFragment"
         android:name="com.example.android.lab4v2.gameFragment"
-        android:label="gameFragment" />
+        android:label="gameFragment" >
+        <action
+            android:id="@+id/action_gameFragment_to_resultsFragment"
+            app:destination="@id/resultsFragment"
+            app:popUpTo="@id/gameFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="invitados"
+            app:argType="string"
+            android:defaultValue="Invitados" />
+    </fragment>
+    <fragment
+        android:id="@+id/resultsFragment"
+        android:name="com.example.android.lab4v2.ResultsFragment"
+        android:label="ResultsFragment" >
+        <action
+            android:id="@+id/action_resultsFragment_to_gameFragment"
+            app:destination="@id/gameFragment"
+            app:popUpTo="@id/homeFragment" />
+        <argument
+            android:name="invitados"
+            app:argType="integer"
+            android:defaultValue="10" />
+        <argument
+            android:name="registrados"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 </navigation>
